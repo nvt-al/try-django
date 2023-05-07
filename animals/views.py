@@ -1,7 +1,8 @@
 from django.http import HttpResponse, HttpResponseNotFound, Http404
 from django.shortcuts import get_object_or_404, render, redirect
+from .forms import *
 
-from animals.models import *
+from .models import *
 
 menu = [
     {"title": "О сайте", "url_name": "about"},
@@ -28,7 +29,20 @@ def about(request):
 
 
 def addpage(request):
-    return HttpResponse("Добавление статьи")
+    if request.method == "POST":
+        form = AddPostForm(request.POST, request.FILES)
+        if form.is_valid():
+            # print(form.cleaned_data)
+            # added db
+            form.save()
+            return redirect("home")
+    else:
+        form = AddPostForm()
+    return render(
+        request,
+        "animals/add_page.html",
+        {"form": form, "menu": menu, "title": "Добавление статьи"},
+    )
 
 
 def contact(request):
@@ -40,15 +54,17 @@ def login(request):
 
 
 def show_post(request, post_slug):
-    post = get_object_or_404(Animals, slug=post_slug)    # выбирает пост с ключом pk(получение конкретной записи из бд)
-                                                         # если не находит, то вывод 404
+    post = get_object_or_404(
+        Animals, slug=post_slug
+    )  # выбирает пост с ключом pk(получение конкретной записи из бд)
+    # если не находит, то вывод 404
     context = {
-        'post': post,
-        'menu': menu,
-        'title': post.title,
-        'cat_selected': post.cat_id,
+        "post": post,
+        "menu": menu,
+        "title": post.title,
+        "cat_selected": post.cat_id,
     }
-    return render(request, 'animals/post.html', context=context)
+    return render(request, "animals/post.html", context=context)
 
 
 def show_category(request, cat_slug):
