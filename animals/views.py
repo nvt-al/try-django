@@ -4,19 +4,14 @@ from django.http import HttpResponse, HttpResponseNotFound, Http404
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView, CreateView
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .forms import *
 from .models import *
-
-menu = [
-    {"title": "О сайте", "url_name": "about"},
-    {"title": "Добавить статью", "url_name": "add_page"},
-    {"title": "Обратная связь", "url_name": "contact"},
-    {"title": "Войти", "url_name": "login"},
-]
+from .utils import *
 
 
-class AnimalsHome(ListView):  # отвечает за главную страницу
+class AnimalsHome(DataMixin, ListView):  # отвечает за главную страницу
     model = Animals  # отображение моделей Animals
     template_name = "animals/index.html"
     context_object_name = "posts"  # index.html
@@ -25,10 +20,8 @@ class AnimalsHome(ListView):  # отвечает за главную стран�
         context = super().get_context_data(
             **kwargs
         )  # получаем распаковку готового словаря
-        context["menu"] = menu
-        context["title"] = "Главная страница"
-        context["cat_selected"] = 0
-        return context
+        c_def = self.get_user_context(title="Главная страница")
+        return dict(list(context.items()) + list(c_def.items()))
 
     def get_queryset(self):  # отображение конкретрых записей
         return Animals.objects.filter(time_published=True)
@@ -50,16 +43,19 @@ def about(request):
     return render(request, "animals/about.html", {"menu": menu, "title": "О сайте"})
 
 
-class AddPage(CreateView):  # представление, отображающее форму
+class AddPage(
+    LoginRequiredMixin, DataMixin, CreateView
+):  # представление, отображающее форму
     form_class = AddPostForm
     template_name = "animals/add_page.html"
     success_url = reverse_lazy("home")
+    login_url = reverse_lazy("home")
+    
 
     def get_context_data(self, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["title"] = "Добавление статьи"
-        context["menu"] = menu
-        return context
+        c_def = self.get_user_context(title="Добавление статьи")
+        return dict(list(context.items()) + list(c_def.items()))
 
 
 # def addpage(request):
@@ -85,7 +81,9 @@ def login(request):
     return HttpResponse("Авторизация")
 
 
-class ShowPost(DetailView):  # содержит объект, на которым работает представление
+class ShowPost(
+    DataMixin, DetailView
+):  # содержит объект, на которым работает представление
     model = Animals
     template_name = "animals/post.html"
     slug_url_kwarg = "post_slug"
@@ -93,9 +91,8 @@ class ShowPost(DetailView):  # содержит объект, на которы�
 
     def get_context_data(self, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["title"] = context["post"]
-        context["menu"] = menu
-        return context
+        c_def = self.get_user_context(title=context["post"])
+        return dict(list(context.items()) + list(c_def.items()))
 
 
 # def show_post(request, post_slug):
@@ -112,7 +109,7 @@ class ShowPost(DetailView):  # содержит объект, на которы�
 #     return render(request, "animals/post.html", context=context)
 
 
-class AnimalsCategory(ListView):  # страница, представляющая список объектов
+class AnimalsCategory(DataMixin, ListView):  # страница, представляющая список объектов
     model = Animals
     template_name = "animals/index.html"
     context_object_name = "posts"
@@ -125,10 +122,11 @@ class AnimalsCategory(ListView):  # страница, представляюща
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["title"] = "Категория - " + str(context["posts"][0].cat)
-        context["menu"] = menu
-        context["cat_selected"] = context["posts"][0].cat_id
-        return context
+        c_def = self.get_user_context(
+            title="Категория - " + str(context["posts"][0].cat),
+            cat_selected=context["posts"][0].cat_id,
+        )
+        return dict(list(context.items()) + list(c_def.items()))
 
 
 # def show_category(request, cat_slug):
