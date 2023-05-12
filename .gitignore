@@ -1,5 +1,5 @@
 # Byte-compiled / optimized / DLL files
-animals/__pycache__/
+__pycache__/
 *.py[cod]
 
 # C extensions
@@ -50,5 +50,4 @@ coverage.xml
 docs/_build/
 
 # picture
-/animals/static/images/
-/media/
+/media
