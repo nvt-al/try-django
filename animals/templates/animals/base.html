@@ -27,12 +27,12 @@
                                 <div class="logo"></div>
                             </a></li>
                         {% for m in menu %}
-                        {% if not forloop.last %}
+
                         <li><a href="{% url m.url_name %}">{{m.title}}</a></li>
-                        {% else %}
-                        <li class="last"><a href="{% url m.url_name %}">{{m.title}}</a></li>
-                        {% endif %}
+
                         {% endfor %}
+                        <li class="last"><a href="{% url 'register' %}">Регистрация</a> | <a
+                                href="{% url 'login' %}">Войти</a></li>
                     </ul>
                     <div class="clear"></div>
                 </div>
@@ -45,14 +45,15 @@
                         <td valign="top" class="left-chapters">
 
                             <ul id="leftchapters">
-                                <li {% if cat_selected == 0 %} class="selected"{% endif %}>
-                                  {% if cat_selected == 0 %}
+                                <li {% if cat_selected == 0 %} class="selected" {% endif %}>
+                                    {% if cat_selected == 0 %}
                                     Все категории
-                                  {% else %}
+                                    {% else %}
+
                                     <a href="{% url 'home' %}">Все категории</a>
-                                  {% endif %}
+                                    {% endif %}
                                 </li>
-                              
+
                                 {% show_categories 'name' cat_selected %}
                                 <li class="share"></li>
                             </ul>
@@ -67,6 +68,39 @@
                             <div class="content-text">
                                 {% block content %}
                                 {% endblock %}
+                                <!-- спроверка на количество страниц (==1)-->
+                                {% if page_obj.has_other_pages %}
+                                <nav class="list-pages">
+                                    <ul>
+                                        <!-- на предыд.стр., если есть -->
+                                        {% if page_obj.has_previous %}
+                                        <li class="page-num">
+                                            <a href="?page={{ page_obj.previous_page_number }}">&lt;</a>
+                                        </li>
+                                        {% endif %}
+
+                                        <!-- paginator page -->
+                                        {% for p in paginator.page_range %}
+                                        {% if page_obj.number == p %}
+                                        <li class="page-num page-num-selected">{{ p }}</li>
+                                        <!-- при большом количестве страниц фильтр 'add' -->
+                                        {% elif p >= page_obj.number|add:-2 and p <= page_obj.number|add:2 %} <li
+                                            class="page-num">
+                                            <a href="?page={{ p }}">{{ p }}</a>
+
+                                            </li>
+                                            {% endif %}
+                                            {% endfor %}
+                                            <!-- на след. страницу, если есть -->
+                                            {% if page_obj.has_next %}
+                                            <li class="page-num">
+                                                <a href="?page={{ page_obj.next_page_number }}">&gt;</a>
+                                            </li>
+                                            {% endif %}
+
+                                    </ul>
+                                </nav>
+                                {% endif %}
                             </div>
                             <!-- Конец блока контента -->
 
