@@ -1,5 +1,8 @@
 from django import forms
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserCreationForm
 from django.forms import ValidationError
+
 from .models import *
 
 
@@ -13,7 +16,6 @@ class AddPostForm(forms.ModelForm):
         )  # вызов конструктора базового класса, который инициализирует форму
         self.fields["cat"].empty_label = "Категория не выбрана"
 
-
     class Meta:
         model = Animals
         fields = ["title", "slug", "content", "photo", "time_published", "cat"]
@@ -22,30 +24,29 @@ class AddPostForm(forms.ModelForm):
             "content": forms.Textarea(attrs={"cols": 60, "rows": 10}),
         }
 
-
     def clean_title(self):  # пользовательская валидация
-        title = self.cleaned_data['title']
+        title = self.cleaned_data["title"]
         if len(title) > 200:
-            raise ValidationError('Длина превышает 200 символов')
+            raise ValidationError("Длина превышает 200 символов")
         return title
 
 
+class RegisterUserForm(UserCreationForm):
+    username = forms.CharField(
+        label="Логин", widget=forms.TextInput(attrs={"class": "form-input"})
+    )
+    email = forms.EmailField(
+        label="Email", widget=forms.EmailInput(attrs={"class": "form-input"})
+    )
+    password1 = forms.CharField(
+        label="Пароль", widget=forms.PasswordInput(attrs={"class": "form-input"})
+    )
+    password2 = forms.CharField(
+        label="Повтор пароля", widget=forms.PasswordInput(attrs={"class": "form-input"})
+    )
 
-    
-
-
-# формы, не связанные с models
-# class AddPostForm(forms.Form):
-#     title = forms.CharField(max_length=255, label="Заголовок")
-#     slug = forms.SlugField(max_length=255, label="URL")
-#     content = forms.CharField(
-#         widget=forms.Textarea(attrs={"cols": 60, "rows": 10}), label="Контент"
-#     )  # виджет Textarea, который позволяет вводить многострочный текст и имеет размерность 60 столбцов и 10 строк
-#     time_published = forms.BooleanField(
-#         label="Публикация", required=False, initial=True
-#     )  # initial - default value/checkbox true
-#     cat = forms.ModelChoiceField(
-#         queryset=Category.objects.all(),
-#         label="Выберите категорию",
-#         empty_label="Категория не выбрана",
-#     )  # Объект модели QuerySet>, из которого берутся варианты выбора для поля и который используется для проверки выбора пользователя
+    # позволяет настроить форму на основе модели, определить, какие поля будут 
+    # отображаться в форме и как они будут отображаться.
+    class Meta:
+        model = User
+        fields = ("username", "email", "password1", "password2")
