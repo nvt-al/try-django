@@ -50,4 +50,10 @@ coverage.xml
 docs/_build/
 
 # picture
-/media
+media/
+
+# Ignore JetBrains RubyMine IDE settings
+/.idea
+
+# Ignore the default SQLite database.
+*.sqlite3
