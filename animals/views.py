@@ -8,6 +8,7 @@ from django.contrib.auth import logout
 from django.contrib.auth import login
 
 
+
 from .forms import *
 from .models import *
 from .utils import *
@@ -26,7 +27,9 @@ class AnimalsHome(DataMixin, ListView):  # отвечает за главную 
         return dict(list(context.items()) + list(c_def.items()))
 
     def get_queryset(self):  # отображение конкретрых записей
-        return Animals.objects.filter(time_published=True)
+        return Animals.objects.filter(time_published=True).select_related(
+            "cat"
+        )  # cat in models. "сжатый запрос" для уменьшения sql запростов
 
 
 class AddPage(
@@ -68,14 +71,17 @@ class AnimalsCategory(DataMixin, ListView):  # страница, предста�
     def get_queryset(self):
         return Animals.objects.filter(
             cat__slug=self.kwargs["cat_slug"], time_published=True
-        )
+        ).select_related(
+            "cat"
+        )  # cat in models. "сжатый запрос" для уменьшения sql запростов
 
+    
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["title"] = "Категория - " + str(context["posts"][0].cat)
-        context["menu"] = menu
-        context["cat_selected"] = context["posts"][0].cat_id
-        return context
+        c = Category.objects.get(slug=self.kwargs['cat_slug'])
+        c_def = self.get_user_context(title='Категория - ' + str(c.name),
+                                      cat_selected=c.pk)
+        return dict(list(context.items()) + list(c_def.items()))
 
 
 class RegisterUser(DataMixin, CreateView):

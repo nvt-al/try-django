@@ -2,8 +2,14 @@ from django.urls import path
 
 from .views import *
 
+# .as_view() класс представления, который обратаывает запросы
+
+# cache_page(60)(AnimalsHome.as_view()) кэширует результаты представления на 60 секунд.
+# Это означает, что при первом запросе к этой странице,
+# результаты будут сохранены в кэше на 60 секунд, и при последующих 
+# запросах в течение этого времени, результаты будут возвращены из кэша,
 urlpatterns = [
-    path("", AnimalsHome.as_view(), name="home"),    # вызов функции
+    path("", AnimalsHome.as_view(), name="home"),
     path("about/", about, name="about"),
     path("addpage/", AddPage.as_view(), name="add_page"),
     path("contact/", contact, name="contact"),

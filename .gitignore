@@ -61,3 +61,6 @@ media/
 
 # Ignore the default SQLite database.
 *.sqlite3
+
+# cache
+/*site_cache
