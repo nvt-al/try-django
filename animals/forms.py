@@ -1,7 +1,9 @@
 from django import forms
 from django.contrib.auth.models import User
+from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.forms import UserCreationForm
 from django.forms import ValidationError
+
 
 from .models import *
 
@@ -16,6 +18,8 @@ class AddPostForm(forms.ModelForm):
         )  # вызов конструктора базового класса, который инициализирует форму
         self.fields["cat"].empty_label = "Категория не выбрана"
 
+    # позволяет настроить форму на основе модели, определить, какие поля будут
+    # отображаться в форме и как они будут отображаться.
     class Meta:
         model = Animals
         fields = ["title", "slug", "content", "photo", "time_published", "cat"]
@@ -31,7 +35,7 @@ class AddPostForm(forms.ModelForm):
         return title
 
 
-class RegisterUserForm(UserCreationForm):
+class RegisterUserForm(UserCreationForm):  # форма регистрации
     username = forms.CharField(
         label="Логин", widget=forms.TextInput(attrs={"class": "form-input"})
     )
@@ -45,8 +49,17 @@ class RegisterUserForm(UserCreationForm):
         label="Повтор пароля", widget=forms.PasswordInput(attrs={"class": "form-input"})
     )
 
-    # позволяет настроить форму на основе модели, определить, какие поля будут 
+    # позволяет настроить форму на основе модели, определить, какие поля будут
     # отображаться в форме и как они будут отображаться.
     class Meta:
         model = User
         fields = ("username", "email", "password1", "password2")
+
+
+class LoginUserForm(AuthenticationForm):  # форма авторизации
+    username = forms.CharField(
+        label="Логин", widget=forms.TextInput(attrs={"class": "form-input"})
+    )
+    password = forms.CharField(
+        label="Пароль", widget=forms.PasswordInput(attrs={"class": "form-input"})
+    )

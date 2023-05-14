@@ -2,6 +2,10 @@
 __pycache__/
 *.py[cod]
 
+
+# env
+*env/
+
 # C extensions
 *.so
 
@@ -57,3 +61,6 @@ media/
 
 # Ignore the default SQLite database.
 *.sqlite3
+
+# cache
+/*site_cache

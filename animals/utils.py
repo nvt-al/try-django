@@ -11,7 +11,7 @@ menu = [
 
 
 class DataMixin:
-    paginate_by = 4                                           # кол-во записей на странице 
+    paginate_by = 10                                          # кол-во записей на странице 
 
     def get_user_context (self, **kwargs):
         context = kwargs
