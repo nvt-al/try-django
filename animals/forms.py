@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.forms import UserCreationForm
 from django.forms import ValidationError
+from captcha.fields import CaptchaField
 
 
 from .models import *
@@ -63,3 +64,12 @@ class LoginUserForm(AuthenticationForm):  # форма авторизации
     password = forms.CharField(
         label="Пароль", widget=forms.PasswordInput(attrs={"class": "form-input"})
     )
+
+
+class ContactForm(forms.Form):
+    name = forms.CharField(label="Логин", max_length=255)
+    email = forms.EmailField(label="Email")
+    content = forms.CharField(label="Текст",
+        widget=forms.Textarea(attrs={"cols": 60, "rows": 10})
+    )  # Textarea позволяет вводить многострочный текст
+    captcha = CaptchaField(label='Введите код с картинки')

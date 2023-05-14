@@ -25,6 +25,7 @@ from animals.views import *
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("animals.urls")),
+    path('captcha/', include('captcha.urls')),
 ]
 
 if settings.DEBUG:

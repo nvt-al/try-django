@@ -1,12 +1,13 @@
 from django.http import HttpResponse, HttpResponseNotFound, Http404
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
-from django.views.generic import DetailView, ListView, CreateView
+from django.views.generic import DetailView, ListView, CreateView, FormView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
+
+
 from django.contrib.auth import logout
 from django.contrib.auth import login
-
 
 
 from .forms import *
@@ -75,12 +76,12 @@ class AnimalsCategory(DataMixin, ListView):  # страница, предста�
             "cat"
         )  # cat in models. "сжатый запрос" для уменьшения sql запростов
 
-    
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        c = Category.objects.get(slug=self.kwargs['cat_slug'])
-        c_def = self.get_user_context(title='Категория - ' + str(c.name),
-                                      cat_selected=c.pk)
+        c = Category.objects.get(slug=self.kwargs["cat_slug"])
+        c_def = self.get_user_context(
+            title="Категория - " + str(c.name), cat_selected=c.pk
+        )
         return dict(list(context.items()) + list(c_def.items()))
 
 
@@ -113,6 +114,21 @@ class LoginUser(DataMixin, LoginView):
         return reverse_lazy("home")
 
 
+class ContactFormView(DataMixin, FormView):
+    form_class = ContactForm
+    template_name = "animals/contact.html"
+    success_url = reverse_lazy("home")
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        c_def = self.get_user_context(title="Обратная связь")
+        return dict(list(context.items()) + list(c_def.items()))
+
+    def form_valid(self, form):  # валидация и вывод данных пользователя
+        print(form.cleaned_data)
+        return redirect("home")
+
+
 def logout_user(request):  # выйти и вернуться на авторизацию
     logout(request)
     return redirect("login")
@@ -120,10 +136,6 @@ def logout_user(request):  # выйти и вернуться на автори�
 
 def pageNotFound(request, exception):
     return HttpResponseNotFound("<h1> Страница не найдена</h1>")
-
-
-def contact(request):
-    return HttpResponse("Обратная связь")
 
 
 def about(request):
