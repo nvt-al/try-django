@@ -9,7 +9,7 @@ from captcha.fields import CaptchaField
 from .models import *
 
 
-# формы, связанные с models
+# форма для добавления новой записи(связь с моделями )
 class AddPostForm(forms.ModelForm):
     def __init__(
         self, *args, **kwargs
@@ -35,8 +35,9 @@ class AddPostForm(forms.ModelForm):
             raise ValidationError("Длина превышает 200 символов")
         return title
 
-
-class RegisterUserForm(UserCreationForm):  # форма регистрации
+\
+# форма регистрации пользователя 
+class RegisterUserForm(UserCreationForm):  
     username = forms.CharField(
         label="Логин", widget=forms.TextInput(attrs={"class": "form-input"})
     )
@@ -57,7 +58,8 @@ class RegisterUserForm(UserCreationForm):  # форма регистрации
         fields = ("username", "email", "password1", "password2")
 
 
-class LoginUserForm(AuthenticationForm):  # форма авторизации
+# форма авторизации пользователя 
+class LoginUserForm(AuthenticationForm):  
     username = forms.CharField(
         label="Логин", widget=forms.TextInput(attrs={"class": "form-input"})
     )
@@ -65,7 +67,7 @@ class LoginUserForm(AuthenticationForm):  # форма авторизации
         label="Пароль", widget=forms.PasswordInput(attrs={"class": "form-input"})
     )
 
-
+# форма для обратной связи 
 class ContactForm(forms.Form):
     name = forms.CharField(label="Логин", max_length=255)
     email = forms.EmailField(label="Email")
