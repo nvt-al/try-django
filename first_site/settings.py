@@ -59,7 +59,9 @@ ROOT_URLCONF = "first_site.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [
+            os.path.join(BASE_DIR, "templates")
+        ],  # added templates/admin/admin_site.html(переадресация страницы)
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
